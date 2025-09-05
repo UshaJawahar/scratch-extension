@@ -2,7 +2,7 @@
 // Update these values to match your backend setup
 
 module.exports = {
-    API_BASE_URL: 'https://theneural-backend-ed2fe2fxhq-uc.a.run.app',
+    API_BASE_URL: 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app',
     DEFAULT_PROJECT_NAME: 'sample', // Default name matching your image
     COLOR_PRIMARY: '#4B5566',
     COLOR_SECONDARY: '#374151',
