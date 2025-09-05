@@ -3,7 +3,7 @@
 
 Write-Host "Deploying scratch-editor to Cloud Run..." -ForegroundColor Blue
 
-$ProjectId = "theneural"
+$ProjectId = "playgroundai-470111"
 $ServiceName = "scratch-editor"
 $Region = "us-central1"
 $ImageName = "gcr.io/$ProjectId/$ServiceName"
@@ -13,7 +13,7 @@ Write-Host "Region: $Region" -ForegroundColor Cyan
 
 # Build Docker image
 Write-Host "Building Docker image..." -ForegroundColor Yellow
-docker build -t $ImageName .
+docker build --no-cache -t $ImageName .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Docker build failed" -ForegroundColor Red

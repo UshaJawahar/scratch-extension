@@ -14,15 +14,11 @@ COPY packages/scratch-vm/package*.json ./packages/scratch-vm/
 COPY packages/scratch-render/package*.json ./packages/scratch-render/
 COPY packages/scratch-svg-renderer/package*.json ./packages/scratch-svg-renderer/
 
-# Create the missing prepare script BEFORE running npm ci
-RUN mkdir -p packages/scratch-gui/scripts
-RUN echo 'console.log("Prepare script placeholder");' > packages/scratch-gui/scripts/prepare.mjs
+# Copy source code first (needed for prepare script)
+COPY . .
 
 # Install all dependencies (including dev dependencies needed for build)
 RUN npm ci
-
-# Copy source code
-COPY . .
 
 # Build the application
 RUN npm run build
