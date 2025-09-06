@@ -25,7 +25,56 @@ const QueryParserHOC = function (WrappedComponent) {
                     this.setActiveCards(tutorialId);
                 }
             }
+            
+            // Save sessionId and projectId to localStorage for ML extension
+            this.saveMLParamsToLocalStorage(queryParams);
         }
+        
+        saveMLParamsToLocalStorage(queryParams) {
+            const sessionId = queryParams.sessionId;
+            const projectId = queryParams.projectId;
+            
+            if (sessionId && projectId) {
+                console.log('QueryParser: Saving ML extension params to localStorage:', { sessionId, projectId });
+                
+                // Save to localStorage with the same keys the ML extension expects
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    window.localStorage.setItem('ml_extension_session_id', sessionId);
+                    window.localStorage.setItem('ml_extension_project_id', projectId);
+                    
+                    // Also save the project name if available
+                    if (queryParams.projectName) {
+                        window.localStorage.setItem('ml_extension_project_name', queryParams.projectName);
+                    }
+                    
+                    // Save additional metadata
+                    window.localStorage.setItem('ml_extension_url_timestamp', Date.now().toString());
+                    
+                    console.log('QueryParser: ML extension params saved to localStorage successfully');
+                    console.log('QueryParser: Available in localStorage:', {
+                        sessionId: window.localStorage.getItem('ml_extension_session_id'),
+                        projectId: window.localStorage.getItem('ml_extension_project_id'),
+                        projectName: window.localStorage.getItem('ml_extension_project_name')
+                    });
+                }
+            } else {
+                console.log('QueryParser: No sessionId or projectId found in URL params:', queryParams);
+                
+                // Check if we have them in localStorage already
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const existingSessionId = window.localStorage.getItem('ml_extension_session_id');
+                    const existingProjectId = window.localStorage.getItem('ml_extension_project_id');
+                    
+                    if (existingSessionId && existingProjectId) {
+                        console.log('QueryParser: Found existing ML extension params in localStorage:', {
+                            sessionId: existingSessionId,
+                            projectId: existingProjectId
+                        });
+                    }
+                }
+            }
+        }
+        
         setActiveCards (tutorialId) {
             this.props.onUpdateReduxDeck(tutorialId);
         }

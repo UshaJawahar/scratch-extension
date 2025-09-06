@@ -48,6 +48,10 @@ import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
 
 import mlIconURL from './ml/ml.png';
 import mlInsetIconURL from './ml/ml-small.svg';
+import teachableMachineIconURL from './teachable-machine/teachable-machine.svg';
+import teachableMachineInsetIconURL from './teachable-machine/teachable-machine-small.svg';
+
+// Using SVG icons embedded in the extension
 
 export default [
     {
@@ -403,6 +407,22 @@ export default [
                 defaultMessage="Train and use machine learning models for text classification."
                 description="Description for the 'Machine Learning' extension"
                 id="gui.extension.ml.description"
+            />
+        ),
+        featured: true,
+        disabled: false,
+        internetConnectionRequired: true
+    },
+    {
+        name: 'Teachable Machine',
+        extensionId: 'tm',
+        iconURL: teachableMachineIconURL,
+        insetIconURL: teachableMachineInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Use your Teachable Machine models in your Scratch project!"
+                description="Description for the 'Teachable Machine' extension"
+                id="gui.extension.teachable_machine.description"
             />
         ),
         featured: true,
