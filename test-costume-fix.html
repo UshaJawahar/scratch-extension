@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Costume Image Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>ML Extension Costume Image Fix Test</h1>
+    
+    <div class="test-section info">
+        <h3>Test Instructions</h3>
+        <p>This test verifies that the ML extension can properly capture costume images using the new data URI approach.</p>
+        <ol>
+            <li>Open Scratch GUI in another tab</li>
+            <li>Add a sprite with a costume</li>
+            <li>Load the ML extension</li>
+            <li>Run the test functions below</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Functions</h3>
+        <p>Open the browser console and run these functions:</p>
+        <pre>
+// Test costume image capture
+window.testCostumeImage()
+
+// Test full prediction flow
+window.testPrediction()
+
+// Check if ML extension is loaded
+console.log('ML Extension loaded:', !!window.MLExtension)
+        </pre>
+    </div>
+
+    <div class="test-section">
+        <h3>Expected Results</h3>
+        <ul>
+            <li><strong>testCostumeImage()</strong> should return a data URI starting with "data:image/"</li>
+            <li><strong>testPrediction()</strong> should attempt to make a prediction (may fail if no project is loaded)</li>
+            <li>No more "Costume: undefined" errors in console</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Console Output Analysis</h3>
+        <p>Look for these log messages in the console:</p>
+        <ul>
+            <li><code>ML Extension: costumeImage called</code></li>
+            <li><code>ML Extension: Current costume: [object]</code></li>
+            <li><code>ML Extension: Costume properties: {...}</code></li>
+            <li><code>ML Extension: Data URI length: [number]</code></li>
+            <li><code>ML Extension: Data URI preview: data:image/...</code></li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Previous Error (Should be Fixed)</h3>
+        <p>These errors should no longer appear:</p>
+        <ul>
+            <li><code>ML Extension: Costume: undefined</code></li>
+            <li><code>ML Extension: Costume bitmapResolution: undefined</code></li>
+            <li><code>ML Extension: No costume or bitmapResolution</code></li>
+        </ul>
+    </div>
+
+    <script>
+        // Auto-refresh page every 30 seconds to check for updates
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>
+

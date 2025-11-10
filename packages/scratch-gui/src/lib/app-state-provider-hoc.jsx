@@ -35,6 +35,7 @@ export const AppStateProviderHOC = function (WrappedComponent) {
                 isPlayerOnly, // eslint-disable-line no-unused-vars
                 showTelemetryModal, // eslint-disable-line no-unused-vars
                 isEmbedded, // eslint-disable-line no-unused-vars
+                localesOnly, // eslint-disable-line no-unused-vars
                 ...componentProps
             } = this.props;
             return (

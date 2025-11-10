@@ -25,7 +25,66 @@ const QueryParserHOC = function (WrappedComponent) {
                     this.setActiveCards(tutorialId);
                 }
             }
+            
+            // Save sessionId and projectId to localStorage for ML extension
+            this.saveMLParamsToLocalStorage(queryParams);
         }
+        
+        saveMLParamsToLocalStorage(queryParams) {
+            const sessionId = queryParams.sessionId;
+            const projectId = queryParams.projectId;
+            const teachableLink = queryParams.teachableLink;
+            
+            if (sessionId && projectId) {
+                console.log('QueryParser: Saving ML extension params to localStorage:', { sessionId, projectId, teachableLink });
+                
+                // Save to localStorage with the same keys the ML extension expects
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    window.localStorage.setItem('ml_extension_session_id', sessionId);
+                    window.localStorage.setItem('ml_extension_project_id', projectId);
+                    
+                    // Save teachableLink if available
+                    if (teachableLink) {
+                        window.localStorage.setItem('ml_extension_teachable_link', teachableLink);
+                        console.log('QueryParser: TeachableLink saved to localStorage:', teachableLink);
+                    }
+                    
+                    // Also save the project name if available
+                    if (queryParams.projectName) {
+                        window.localStorage.setItem('ml_extension_project_name', queryParams.projectName);
+                    }
+                    
+                    // Save additional metadata
+                    window.localStorage.setItem('ml_extension_url_timestamp', Date.now().toString());
+                    
+                    console.log('QueryParser: ML extension params saved to localStorage successfully');
+                    console.log('QueryParser: Available in localStorage:', {
+                        sessionId: window.localStorage.getItem('ml_extension_session_id'),
+                        projectId: window.localStorage.getItem('ml_extension_project_id'),
+                        teachableLink: window.localStorage.getItem('ml_extension_teachable_link'),
+                        projectName: window.localStorage.getItem('ml_extension_project_name')
+                    });
+                }
+            } else {
+                console.log('QueryParser: No sessionId or projectId found in URL params:', queryParams);
+                
+                // Check if we have them in localStorage already
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const existingSessionId = window.localStorage.getItem('ml_extension_session_id');
+                    const existingProjectId = window.localStorage.getItem('ml_extension_project_id');
+                    const existingTeachableLink = window.localStorage.getItem('ml_extension_teachable_link');
+                    
+                    if (existingSessionId && existingProjectId) {
+                        console.log('QueryParser: Found existing ML extension params in localStorage:', {
+                            sessionId: existingSessionId,
+                            projectId: existingProjectId,
+                            teachableLink: existingTeachableLink
+                        });
+                    }
+                }
+            }
+        }
+        
         setActiveCards (tutorialId) {
             this.props.onUpdateReduxDeck(tutorialId);
         }
