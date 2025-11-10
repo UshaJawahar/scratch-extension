@@ -17,6 +17,7 @@ module.exports = {
         PROJECT_ID: 'ml_extension_project_id',
         SESSION_ID: 'ml_extension_session_id',
         PROJECT_NAME: 'ml_extension_project_name',
-        PROJECT_LABELS: 'ml_extension_project_labels'
+        PROJECT_LABELS: 'ml_extension_project_labels',
+        TEACHABLE_LINK: 'ml_extension_teachable_link'
     }
 };
