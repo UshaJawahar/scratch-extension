@@ -10,29 +10,29 @@ const path = require('path');
 
 // Configuration
 const OLD_URL = 'http://localhost:8000';
-const NEW_URL = 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app';
+const NEW_URL = 'http://localhost:8080';
 
 // Files to update with their specific line patterns
 const FILES_TO_UPDATE = [
     {
         path: 'packages/scratch-vm/playground/scratch-vm.js',
         pattern: "let apiBaseUrl = 'http://localhost:8000';",
-        replacement: "let apiBaseUrl = 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app';"
+        replacement: "let apiBaseUrl = 'http://localhost:8080';"
     },
     {
         path: 'packages/scratch-vm/playground/benchmark.js',
         pattern: "let apiBaseUrl = 'http://localhost:8000';",
-        replacement: "let apiBaseUrl = 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app';"
+        replacement: "let apiBaseUrl = 'http://localhost:8080';"
     },
     {
         path: 'packages/scratch-vm/dist/web/scratch-vm.js',
         pattern: "let apiBaseUrl = 'http://localhost:8000';",
-        replacement: "let apiBaseUrl = 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app';"
+        replacement: "let apiBaseUrl = 'http://localhost:8080';"
     },
     {
         path: 'packages/scratch-vm/dist/node/scratch-vm.js',
         pattern: "let apiBaseUrl = 'http://localhost:8000';",
-        replacement: "let apiBaseUrl = 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app';"
+        replacement: "let apiBaseUrl = 'http://localhost:8080';"
     }
 ];
 

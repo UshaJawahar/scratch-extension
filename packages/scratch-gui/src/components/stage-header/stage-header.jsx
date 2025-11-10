@@ -198,7 +198,7 @@ const StageHeaderComponent = function (props) {
 };
 
 const mapStateToProps = state => ({
-    projectId: state.scratchGui.projectState.projectId,
+    projectId: state.scratchGui.projectState.projectId ? parseInt(state.scratchGui.projectState.projectId, 10) : null,
     // This is the button's mode, as opposed to the actual current state
     stageSizeMode: state.scratchGui.stageSize.stageSize
 });
@@ -214,7 +214,7 @@ StageHeaderComponent.propTypes = {
     onSetStageSmall: PropTypes.func.isRequired,
     onSetStageUnFull: PropTypes.func.isRequired,
     onUpdateProjectThumbnail: PropTypes.func,
-    projectId: PropTypes.number.isRequired,
+    projectId: PropTypes.number,
     showBranding: PropTypes.bool.isRequired,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
     vm: PropTypes.instanceOf(VM).isRequired

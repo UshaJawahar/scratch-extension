@@ -96,7 +96,7 @@ You can set environment variables for your ML extension:
 gcloud run services update scratch-editor \
     --region us-central1 \
     --set-env-vars \
-    ML_API_URL=https://your-backend-url.com,\
+    ML_API_URL=http://localhost:8080,\
     ML_API_KEY=your-api-key
 ```
 

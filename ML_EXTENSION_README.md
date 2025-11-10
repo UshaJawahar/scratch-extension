@@ -148,7 +148,7 @@ The extension configuration is in `config.js`:
 
 ```javascript
 module.exports = {
-    API_BASE_URL: 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app',  // Your backend URL
+    API_BASE_URL: 'http://localhost:8080',  // Your backend URL
     DEFAULT_PROJECT_NAME: 'sample',          // Fallback name
     COLOR_PRIMARY: '#4B5566',               // Extension colors
     COLOR_SECONDARY: '#374151'

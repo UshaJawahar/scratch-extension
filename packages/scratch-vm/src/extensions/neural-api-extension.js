@@ -204,7 +204,7 @@ const NeuralApiExtension = {
 
 // API configuration
 const API_CONFIG = {
-    baseUrl: 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app', // Production backend URL
+    baseUrl: 'http://localhost:8080', // Local development backend URL
     endpoints: {
         // Regular projects (for authenticated users)
         projects: '/projects',

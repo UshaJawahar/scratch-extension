@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Extension Refresh Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 ML Extension Refresh Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Instructions</h3>
+        <p>This page simulates the extension loading process to test the refresh mechanism.</p>
+        <ol>
+            <li>Open browser console (F12)</li>
+            <li>Click "Simulate Extension Load" below</li>
+            <li>Watch the console logs</li>
+            <li>Check if the extension properly notifies about being ready</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Controls</h3>
+        <button onclick="simulateExtensionLoad()">Simulate Extension Load</button>
+        <button onclick="testManualRefresh()">Test Manual Refresh</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Console Log</h3>
+        <div id="log" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Expected Behavior</h3>
+        <p>After clicking "Simulate Extension Load", you should see:</p>
+        <ul>
+            <li>✅ "Extension is now ready with real project data"</li>
+            <li>✅ "Emitting EXTENSION_ADDED event to refresh blocks"</li>
+            <li>✅ Multiple delayed refresh attempts</li>
+            <li>✅ The extension should show proper blocks instead of "Initializing..."</li>
+        </ul>
+    </div>
+
+    <script>
+        // Mock runtime for testing
+        const mockRuntime = {
+            emit: (event, extensionId) => {
+                log(`🔄 Runtime Event: ${event} for extension: ${extensionId}`);
+                return true;
+            }
+        };
+        
+        // Mock extension class (simplified)
+        class MockMLExtension {
+            constructor() {
+                this.runtime = mockRuntime;
+                this.isReady = false;
+                this.projectName = null;
+                this.projectLabels = [];
+                this.sessionId = 'test-session';
+                this.projectId = 'test-project';
+            }
+            
+            async initializeProjectDataAsync() {
+                log('🔄 Running asynchronous initialization...');
+                
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Simulate successful API response
+                this.projectName = 'Test Project';
+                this.projectLabels = ['cat', 'dog', 'bird'];
+                this.isReady = true;
+                
+                log(`✅ Project data loaded - Name: ${this.projectName}, Labels: ${this.projectLabels.join(', ')}`);
+                log('✅ Extension is now ready with real project data');
+                
+                // Notify runtime that extension has changed
+                if (this.runtime && this.runtime.emit) {
+                    log('🔄 Emitting EXTENSION_ADDED event to refresh blocks');
+                    this.runtime.emit('EXTENSION_ADDED', 'ml');
+                }
+                
+                // Also try multiple delayed refreshes to ensure blocks update
+                setTimeout(() => {
+                    if (this.runtime && this.runtime.emit) {
+                        log('🔄 Delayed refresh 1 - emitting EXTENSION_ADDED event');
+                        this.runtime.emit('EXTENSION_ADDED', 'ml');
+                    }
+                }, 500);
+                
+                setTimeout(() => {
+                    if (this.runtime && this.runtime.emit) {
+                        log('🔄 Delayed refresh 2 - emitting EXTENSION_ADDED event');
+                        this.runtime.emit('EXTENSION_ADDED', 'ml');
+                    }
+                }, 1000);
+                
+                setTimeout(() => {
+                    if (this.runtime && this.runtime.emit) {
+                        log('🔄 Delayed refresh 3 - emitting EXTENSION_ADDED event');
+                        this.runtime.emit('EXTENSION_ADDED', 'ml');
+                    }
+                }, 2000);
+            }
+            
+            getInfo() {
+                if (!this.isReady) {
+                    log('⚠️ Extension not ready, returning minimal blocks');
+                    return {
+                        id: 'ml',
+                        name: 'Initializing...',
+                        color1: '#800080',
+                        color2: '#800080',
+                        blocks: []
+                    };
+                }
+                
+                log('✅ Extension ready, returning full blocks');
+                return {
+                    id: 'ml',
+                    name: this.projectName || 'ML Project',
+                    color1: '#4B5566',
+                    color2: '#374151',
+                    blocks: [
+                        { opcode: 'testBlock1', text: 'test block 1' },
+                        { opcode: 'testBlock2', text: 'test block 2' }
+                    ]
+                };
+            }
+        }
+        
+        let extension = null;
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function simulateExtensionLoad() {
+            log('🚀 Starting extension load simulation...');
+            extension = new MockMLExtension();
+            
+            // Simulate the getInfo calls that happen during loading
+            log('📋 Initial getInfo() call (should show "Initializing...")');
+            const initialInfo = extension.getInfo();
+            log(`   Name: ${initialInfo.name}, Blocks: ${initialInfo.blocks.length}`);
+            
+            // Start async initialization
+            extension.initializeProjectDataAsync();
+        }
+        
+        function testManualRefresh() {
+            if (!extension) {
+                log('❌ No extension loaded. Click "Simulate Extension Load" first.');
+                return;
+            }
+            
+            log('🔄 Testing manual refresh...');
+            if (extension.runtime && extension.runtime.emit) {
+                extension.runtime.emit('EXTENSION_ADDED', 'ml');
+            }
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        // Auto-start test
+        window.addEventListener('load', () => {
+            log('📄 Test page loaded. Click "Simulate Extension Load" to start.');
+        });
+    </script>
+</body>
+</html>
+

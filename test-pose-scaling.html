@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pose Scaling Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        #webcam {
+            width: 400px;
+            height: 300px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        .info {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e7f3ff;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pose Scaling Accuracy Test</h1>
+        <p>This test helps verify that pose keypoints are correctly positioned and scaled.</p>
+        
+        <div class="video-container">
+            <video id="webcam" autoplay muted></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div>
+            <button id="startBtn">Start Test</button>
+            <button id="stopBtn" disabled>Stop</button>
+        </div>
+        
+        <div id="info" class="info">
+            Click "Start Test" to begin pose detection with scaling verification...
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+    
+    <script>
+        const URL = "https://teachablemachine.withgoogle.com/models/iQB4kce4Z/";
+        let model, webcam, ctx, canvas, isRunning = false;
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmPose.load(modelURL, metadataURL);
+
+            // Setup webcam
+            const size = 200;
+            const flip = true;
+            webcam = new tmPose.Webcam(size, size, flip);
+            await webcam.setup();
+            await webcam.play();
+
+            // Setup canvas
+            canvas = document.getElementById("canvas");
+            canvas.width = 400;
+            canvas.height = 300;
+            ctx = canvas.getContext("2d");
+
+            // Setup video display
+            const video = document.getElementById("webcam");
+            video.srcObject = webcam.video.srcObject;
+
+            isRunning = true;
+            loop();
+        }
+
+        async function loop() {
+            if (!isRunning) return;
+
+            webcam.update();
+            await predict();
+            requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (pose && pose.keypoints && pose.keypoints.length > 0) {
+                // Draw the video frame
+                ctx.drawImage(webcam.video, 0, 0, canvas.width, canvas.height);
+                
+                // Scale pose keypoints to match canvas size
+                const scaledPose = scalePoseKeypoints(pose, canvas.width, canvas.height);
+                
+                // Draw pose with scaled coordinates
+                const minPartConfidence = 0.5;
+                tmPose.drawKeypoints(scaledPose.keypoints, minPartConfidence, ctx);
+                tmPose.drawSkeleton(scaledPose.keypoints, minPartConfidence, ctx);
+                
+                // Update info
+                updateInfo(pose, scaledPose);
+            }
+        }
+
+        function scalePoseKeypoints(pose, canvasWidth, canvasHeight) {
+            if (!pose || !pose.keypoints) return pose;
+            
+            // Get video dimensions
+            const videoWidth = webcam.video.videoWidth || 640;
+            const videoHeight = webcam.video.videoHeight || 480;
+            
+            // Calculate scaling factors
+            const scaleX = canvasWidth / videoWidth;
+            const scaleY = canvasHeight / videoHeight;
+            
+            // Create scaled pose
+            const scaledPose = {
+                ...pose,
+                keypoints: pose.keypoints.map(keypoint => ({
+                    ...keypoint,
+                    x: keypoint.x * scaleX,
+                    y: keypoint.y * scaleY
+                }))
+            };
+            
+            return scaledPose;
+        }
+
+        function updateInfo(originalPose, scaledPose) {
+            const info = document.getElementById("info");
+            const keypointCount = originalPose.keypoints.length;
+            const videoWidth = webcam.video.videoWidth || 640;
+            const videoHeight = webcam.video.videoHeight || 480;
+            const scaleX = canvas.width / videoWidth;
+            const scaleY = canvas.height / videoHeight;
+            
+            info.innerHTML = `
+                <strong>Pose Detection Info:</strong><br>
+                Keypoints detected: ${keypointCount}<br>
+                Video size: ${videoWidth} x ${videoHeight}<br>
+                Canvas size: ${canvas.width} x ${canvas.height}<br>
+                Scale factors: X=${scaleX.toFixed(2)}, Y=${scaleY.toFixed(2)}<br>
+                <em>Keypoints should now be precisely aligned with facial features and body joints.</em>
+            `;
+        }
+
+        // Button handlers
+        document.getElementById('startBtn').addEventListener('click', () => {
+            init();
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+        });
+
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            isRunning = false;
+            if (webcam) {
+                webcam.stop();
+            }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('info').textContent = 'Stopped. Click "Start Test" to begin again.';
+        });
+    </script>
+</body>
+</html>

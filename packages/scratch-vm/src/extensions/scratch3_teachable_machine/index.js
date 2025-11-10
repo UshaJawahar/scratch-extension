@@ -5,8 +5,8 @@ const formatMessage = require('format-message');
 // Global variables for the extension
 let model = null;
 let isModelLoaded = false;
-let modelLabels = ['class1', 'class2', 'class3']; // Default labels
-let originalLabels = ['class1', 'class2', 'class3']; // Store original labels without prefixes
+let modelLabels = []; // Labels from API only
+let originalLabels = []; // Store original labels without prefixes
 let currentPrediction = null;
 let confidenceThreshold = 0.8;
 let teachableLink = '';
@@ -89,6 +89,21 @@ async function loadModel(url) {
         
         console.log('Teachable Machine: Model loaded successfully');
         console.log('Teachable Machine: Labels:', modelLabels);
+        
+        // Force refresh the extension menus to show new labels
+        // Use a timeout to ensure VM is properly initialized
+        setTimeout(() => {
+            if (typeof window !== 'undefined' && window.Scratch && window.Scratch.vm) {
+                try {
+                    window.Scratch.vm.emit('BLOCKSINFO_UPDATE');
+                    console.log('Teachable Machine: Extension menus refreshed with new labels');
+                } catch (e) {
+                    console.log('Teachable Machine: Could not refresh menus:', e.message);
+                }
+            } else {
+                console.log('Teachable Machine: VM not available for menu refresh');
+            }
+        }, 100);
         
         // Clear any existing error notifications
         clearModelErrors();
@@ -540,7 +555,7 @@ function initializeFromURL() {
 function handleNoModelFound() {
     console.error('Teachable Machine: No valid model URL found. Please check the teachableLink parameter.');
     isModelLoaded = false;
-    setDefaultLabels();
+    setLabelsFromAPI();
     showModelError('No valid model URL found. Please check the teachableLink parameter.');
 }
 
@@ -638,9 +653,9 @@ function createCustomErrorNotification(message) {
     }
 }
 
-// Function to set default labels when no model is loaded
-function setDefaultLabels() {
-    modelLabels = ['class1', 'class2', 'class3'];
+// Function to set labels from API only
+function setLabelsFromAPI() {
+    modelLabels = [];
     
     // Force refresh the extension menus
     if (typeof window !== 'undefined' && window.Scratch && window.Scratch.vm) {
@@ -775,8 +790,8 @@ function updateUseModelBlockText(url) {
 // Auto-initialize when extension loads - call immediately to set URL variables before blocks are rendered
 initializeFromURL();
 
-// Set default labels after initialization
-setTimeout(setDefaultLabels, 1000);
+// Set labels from API after initialization
+setTimeout(setLabelsFromAPI, 1000);
 
 // Make the updateUseModelBlockText function available globally
 window.updateUseModelBlockText = updateUseModelBlockText;
@@ -817,6 +832,7 @@ function TeachableMachineExtension(runtimeInstance) {
                 name: 'Teachable Machine',
                 color1: '#800080',
                 color2: '#800080',
+                customFieldTypes: {},
                 blocks: [
                     {
                         opcode: 'useModel',
@@ -934,7 +950,7 @@ function TeachableMachineExtension(runtimeInstance) {
                     labels: {
                         acceptReporters: false,
                         items: () => {
-                            // Always return valid labels, with fallback to defaults
+                            // Return labels from API only
                             if (modelLabels && Array.isArray(modelLabels) && modelLabels.length > 0) {
                                 // Filter out any invalid labels and ensure they're strings
                                 const validLabels = modelLabels.filter(label => 
@@ -949,8 +965,8 @@ function TeachableMachineExtension(runtimeInstance) {
                                 }
                             }
                             
-                            // Fallback to default labels
-                            return [['class1', 'class1'], ['class2', 'class2'], ['class3', 'class3']];
+                            // Return a single placeholder item to prevent Blockly crash
+                            return [['Loading...', 'loading']];
                         }
                     },
                     videoState: {
