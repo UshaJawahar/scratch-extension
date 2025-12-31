@@ -3,7 +3,7 @@
 
 module.exports = {
     // API Configuration
-    API_BASE_URL: 'https://playgroundai-backend-uaaur7no2a-uc.a.run.app',
+    API_BASE_URL: 'https://playground-backend-v2-uaaur7no2a-uc.a.run.app',
     
     // Extension Colors - Dark grey as shown in the image
     COLOR_PRIMARY: '#4B5566',
